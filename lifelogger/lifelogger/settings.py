@@ -32,9 +32,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ['DEBUG']
 
-ALLOWED_HOSTS = [
-    "127.0.0.1"
-]
+ALLOWED_HOSTS = ["127.0.0.1"]
 
 # Application definition
 
@@ -51,7 +49,7 @@ INSTALLED_APPS = [
     'drf_spectacular_sidecar',  # required for Django collectstatic discovery
     # Apps
     'main',
-    'exercise'
+    'exercise',
 ]
 
 MIDDLEWARE = [
@@ -142,13 +140,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Swagger settings
 SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'Token': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header'
-        }
-    },
+    'SECURITY_DEFINITIONS': {'Token': {'type': 'apiKey', 'name': 'Authorization', 'in': 'header'}},
 }
 
 SPECTACULAR_SETTINGS = {

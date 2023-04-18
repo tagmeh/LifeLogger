@@ -9,4 +9,3 @@ User = get_user_model()
 class UserAPIView(ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
