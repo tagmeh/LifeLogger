@@ -2,27 +2,39 @@
 name = "lifelogger"
 version = "0.1.0"
 description = ""
-authors = [{name="Tagmeh"}]
+authors = ["= <=>"]
 readme = "README.md"
-license = {file = "LICENSE"}
-requires-python = ">=3.10"
-dependencies = [
-    "requests"
-]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^4.2"
+django-rest-framework = "^0.1.0"
+djangorestframework = "^3.14.0"
+django-filter = "^23.1"
+markdown = "^3.4.3"
+django-environ = "^0.10.0"
+python-dotenv = "^1.0.0"
+drf-spectacular = {extras = ["sidecar"], version = "^0.26.2"}
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+mypy = "^1.2.0"
+django-stubs = "^1.16.0"
 
 
-[project.urls]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 
 [tool.mypy]
-python_version = 3.8
+python_version = 3.11
 disallow_untyped_defs = true
 ignore_missing_imports = true
 strict = true
 exclude = ["tests"]
-
-
-[tool.pytest.ini_options]
+plugins = ["mypy_django_plugin.main"]
 
 
 [tool.black]
@@ -30,6 +42,5 @@ line_length = 120
 skip-string-normalization = true
 
 
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+[tool.django-stubs]
+django_settings_module = "myproject.settings"
