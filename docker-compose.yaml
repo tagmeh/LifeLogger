@@ -1,0 +1,63 @@
+services:
+  # docker exec -it codebot bash
+#  bot:
+#    container_name: "codebot"
+#    restart: on-failure
+#    image: tagmeh/codebot
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    env_file:
+#      - prod.env
+#    entrypoint: ['poetry', 'run', 'python3', 'bot.py']
+#    ports:
+#      - "8000:8000"
+#    volumes:
+#      - ./logs:/bot/logs
+#      - docker_data:/bot/data
+#    depends_on:
+#      - postgres
+#    mem_limit: 500m
+#    mem_reservation: 50m
+
+  web:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    volumes:
+      - dbdata:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: lifelogger
+
+#  mongo:
+#    container_name: "mongodb"
+#    restart: on-failure
+#    image: mongo
+
+
+volumes:
+  dbdata:
+#  postgres_data:
+#    driver: local
+#    driver_opts:
+#      o: bind
+#      type: none
+#      device: /home/pi/Documents/db_data
+#  #      device: C:\Users\John\Documents\postgres_data
+#
+#  docker_data:
+#    driver: local
+#    driver_opts:
+#      o: bind
+#      type: none
+#      device: /home/pi/Documents/docker_data
+#      device: C:\Users\John\Documents\docker_data
