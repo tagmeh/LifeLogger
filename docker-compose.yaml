@@ -1,63 +1,92 @@
+version: '3.9'
+
 services:
-  # docker exec -it codebot bash
-#  bot:
-#    container_name: "codebot"
-#    restart: on-failure
-#    image: tagmeh/codebot
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    env_file:
-#      - prod.env
-#    entrypoint: ['poetry', 'run', 'python3', 'bot.py']
-#    ports:
-#      - "8000:8000"
-#    volumes:
-#      - ./logs:/bot/logs
-#      - docker_data:/bot/data
-#    depends_on:
-#      - postgres
-#    mem_limit: 500m
-#    mem_reservation: 50m
+  db:
+    image: postgres:14.1
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
 
   web:
     build: .
+    command: poetry run python manage.py runserver 0.0.0.0:8001
     volumes:
       - .:/app
     ports:
       - "8001:8001"
     depends_on:
       - db
-
-  db:
-    image: postgres
-    volumes:
-      - dbdata:/var/lib/postgresql/data/
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: lifelogger
-
-#  mongo:
-#    container_name: "mongodb"
-#    restart: on-failure
-#    image: mongo
-
+    env_file:
+      - .env
 
 volumes:
-  dbdata:
-#  postgres_data:
-#    driver: local
-#    driver_opts:
-#      o: bind
-#      type: none
-#      device: /home/pi/Documents/db_data
-#  #      device: C:\Users\John\Documents\postgres_data
+  postgres_data:
+
+
+#services:
+#  # docker exec -it codebot bash
+##  bot:
+##    container_name: "codebot"
+##    restart: on-failure
+##    image: tagmeh/codebot
+##    build:
+##      context: .
+##      dockerfile: Dockerfile
+##    env_file:
+##      - prod.env
+##    entrypoint: ['poetry', 'run', 'python3', 'bot.py']
+##    ports:
+##      - "8000:8000"
+##    volumes:
+##      - ./logs:/bot/logs
+##      - docker_data:/bot/data
+##    depends_on:
+##      - postgres
+##    mem_limit: 500m
+##    mem_reservation: 50m
 #
-#  docker_data:
-#    driver: local
-#    driver_opts:
-#      o: bind
-#      type: none
-#      device: /home/pi/Documents/docker_data
-#      device: C:\Users\John\Documents\docker_data
+#  web:
+#    build: .
+#    volumes:
+#      - .:/app
+#    ports:
+#      - "8001:8001"
+#    depends_on:
+#      - db
+#
+#  db:
+#    image: postgres
+#    volumes:
+#      - dbdata:/var/lib/postgresql/data/
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      POSTGRES_DB: lifelogger
+#
+##  mongo:
+##    container_name: "mongodb"
+##    restart: on-failure
+##    image: mongo
+#
+#
+#volumes:
+#  dbdata:
+##  postgres_data:
+##    driver: local
+##    driver_opts:
+##      o: bind
+##      type: none
+##      device: /home/pi/Documents/db_data
+##  #      device: C:\Users\John\Documents\postgres_data
+##
+##  docker_data:
+##    driver: local
+##    driver_opts:
+##      o: bind
+##      type: none
+##      device: /home/pi/Documents/docker_data
+##      device: C:\Users\John\Documents\docker_data

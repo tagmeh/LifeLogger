@@ -1,30 +1,66 @@
 FROM python:3.11-slim-buster
 
-# Update and upgrade the linux environment
-RUN apt-get -y update && apt-get install -y git
+# Install dependencies for building native extensions
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install gcc, which is required for python-levenshtein
-RUN apt-get install gcc -y
-
-# Install psycopg2 dependencies for Linux.
-RUN apt-get install python3-dev libpq-dev -y
-
-# Install pipenv.
-# -U upgrades the specified package(s)
+# Install Poetry
 RUN pip install -U poetry
 
-RUN ls -al
-# Create and cd to the working directory
-WORKDIR /LifeLogger
-RUN ls -al
-# Copy the source code in last to optimize rebuilding the image
-COPY .env .
-COPY ./lifelogger .
+# Set the working directory
+WORKDIR /app
 
-# Install project dependencies
-COPY pyproject.toml .
+# Copy the project files to the container
+COPY poetry.lock pyproject.toml ./
 
-RUN poetry install
+# Install the project dependencies
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-dev --no-interaction --no-ansi
+
+# Copy the project code to the container
+COPY . .
+
+# Set environment variables
+ENV PYTHONUNBUFFERED 1
+ENV DJANGO_SETTINGS_MODULE=myproject.settings.production
+
+# Expose port 8001 for the Django application
+EXPOSE 8001
+
+# Start the Django application
+CMD ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8001"]
+
+
+
+#FROM python:3.11-slim-buster
+#
+## Update and upgrade the linux environment
+#RUN apt-get -y update && apt-get install -y git
+#
+## Install gcc, which is required for python-levenshtein
+#RUN apt-get install gcc -y
+#
+## Install psycopg2 dependencies for Linux.
+#RUN apt-get install python3-dev libpq-dev -y
+#
+## Install pipenv.
+## -U upgrades the specified package(s)
+#RUN pip install -U poetry
+#
+#RUN ls -al
+## Create and cd to the working directory
+#WORKDIR /LifeLogger
+#RUN ls -al
+## Copy the source code in last to optimize rebuilding the image
+#COPY .env .
+#COPY ./lifelogger .
+#
+## Install project dependencies
+#COPY pyproject.toml .
+#
+#RUN poetry install
 
 
 
