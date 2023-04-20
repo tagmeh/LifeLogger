@@ -42,15 +42,16 @@ FROM python:3.11-slim-buster
 WORKDIR /app
 
 # Copy the requirements file into the container
-COPY requirements.txt .
+COPY pyproject.toml. .
 
 # Install any dependencies for the app
-RUN pip install --no-cache-dir -r requirements.txt
+RUN poetry install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code into the container
-COPY . /app/
+COPY . .
 
 # Set environment variables for the database
+COPY .env .
 ENV POSTGRES_USER postgres
 ENV POSTGRES_PASSWORD postgres
 ENV POSTGRES_DB lifelogger
@@ -61,7 +62,7 @@ RUN apt-get update && apt-get install -y postgresql-client && \
     rm -rf /var/lib/apt/lists/*
 
 # Expose the port on which the Django app will run
-EXPOSE 8000
+#EXPOSE 8000
 
 # Start the Django app
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
