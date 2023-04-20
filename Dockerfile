@@ -13,20 +13,17 @@ RUN apt-get install python3-dev libpq-dev -y
 # -U upgrades the specified package(s)
 RUN pip install -U poetry
 
+RUN ls -al
 # Create and cd to the working directory
 WORKDIR /LifeLogger
-
+RUN ls -al
 # Copy the source code in last to optimize rebuilding the image
 COPY .env .
-COPY ./lifelogger ./lifelogger
+COPY ./lifelogger .
 
 # Install project dependencies
-COPY poetry.lock .
 COPY pyproject.toml .
-# --system installs to the parent system. Removed until the below is solved. Not transferring the lock file over to the
-#  container breaks this flag.
-# --deploy enforces that that pipfile is up to date, or fails. Removed until a way is discovered to have a windows
-#  and linux pipfile at the same time. The lock file will always be wrong when install on the other platform.
+
 RUN poetry install
 
 
