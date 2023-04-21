@@ -1,91 +1,69 @@
-version: '3.9'
+version: '3'
 
 services:
-  web:
-    build: .
-    command: poetry run python manage.py runserver 0.0.0.0:8001
+  nginx:
+    build: ./nginx
+    ports:
+      - "1339:80"
     volumes:
-      - .:/app
+      - static_volume:/home/app/microservice/static
+    depends_on:
+      - web
+    restart: "on-failure"
+
+  db:
+    image: postgres
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - PGPORT=${DB_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+    restart: "on-failure"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "python manage.py makemigrations &&
+                    python manage.py migrate &&
+                    gunicorn microservice_sample_app.wsgi:application --bind 0.0.0.0:${APP_PORT}"
+    volumes:
+      - .:/microservice
+      - static_volume:/home/app/microservice/static
     ports:
       - "8001:8001"
     depends_on:
       - db
     env_file:
       - .env
+    image: microservice_app
+    expose:
+      - ${APP_PORT}
+    restart: "on-failure"
 
-  db:
-    image: postgres
+  rabbitmq:
+    image:
+      rabbitmq:3-management-alpine
+    container_name: rabbitmq
     volumes:
-      - dbdata:/var/lib/postgresql/data/
+      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
+      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: lifelogger
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - 5672:5672
+      - 15672:15672
+    depends_on:
+      - web
 
-#volumes:
-#  postgres_data:
-
-
-#services:
-#  # docker exec -it codebot bash
-##  bot:
-##    container_name: "codebot"
-##    restart: on-failure
-##    image: tagmeh/codebot
-##    build:
-##      context: .
-##      dockerfile: Dockerfile
-##    env_file:
-##      - prod.env
-##    entrypoint: ['poetry', 'run', 'python3', 'bot.py']
-##    ports:
-##      - "8000:8000"
-##    volumes:
-##      - ./logs:/bot/logs
-##      - docker_data:/bot/data
-##    depends_on:
-##      - postgres
-##    mem_limit: 500m
-##    mem_reservation: 50m
-#
-#  web:
-#    build: .
-#    volumes:
-#      - .:/app
-#    ports:
-#      - "8001:8001"
-#    depends_on:
-#      - db
-#
-#  db:
-#    image: postgres
-#    volumes:
-#      - dbdata:/var/lib/postgresql/data/
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgres
-#      POSTGRES_DB: lifelogger
-#
-##  mongo:
-##    container_name: "mongodb"
-##    restart: on-failure
-##    image: mongo
-#
-#
 volumes:
-  dbdata:
-#  postgres_data:
-#    driver: local
-#    driver_opts:
-#      o: bind
-#      type: none
-#      device: /home/pi/Documents/db_data
-#  #      device: C:\Users\John\Documents\postgres_data
-#
-#  docker_data:
-#    driver: local
-#    driver_opts:
-#      o: bind
-#      type: none
-#      device: /home/pi/Documents/docker_data
-#      device: C:\Users\John\Documents\docker_data
+  postgres_data:
+  static_volume:
+  rabbitmq:
+  rabbitmq_logs:
