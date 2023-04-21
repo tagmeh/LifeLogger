@@ -47,6 +47,7 @@ services:
       dockerfile: Dockerfile
     command: sh -c "python manage.py makemigrations &&
                     python manage.py migrate &&
+                    python collectstatic &&
                     gunicorn lifelogger.wsgi:application --bind 0.0.0.0:${APP_PORT}"
     volumes:
       - .:/microservice
