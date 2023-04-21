@@ -9,6 +9,7 @@ RUN pip install --upgrade pip
 
 # Install Poetry
 RUN pip install -U poetry
+RUN python -m pip install gunicorn
 
 # Set the working directory
 RUN mkdir -p /app
