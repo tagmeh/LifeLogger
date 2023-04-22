@@ -82,10 +82,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'lifelogger.wsgi.application'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # /app/static in the docker
-STATICFILES_DIR = (os.path.join(BASE_DIR, 'static'),)
-STATIC_URL = '/static/'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -133,7 +129,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # /app/static in the docker
+STATICFILES_DIR = (os.path.join(BASE_DIR, 'static'),)
 STATIC_URL = '/static/'
 
 # Default primary key field type
