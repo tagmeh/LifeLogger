@@ -42,7 +42,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
     restart: "on-failure"
 
-  app:
+  django-app:
     build:
       context: .
       dockerfile: Dockerfile
