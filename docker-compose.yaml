@@ -51,8 +51,6 @@ services:
     volumes:
       - .:/microservice
       - static_volume:/home/app/microservice/static
-    ports:
-      - "8000:8000"
     depends_on:
       - db
     env_file:
