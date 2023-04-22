@@ -51,6 +51,7 @@ services:
                     gunicorn lifelogger.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - .:/microservice
+      - static_volume:/microservice/static/
     depends_on:
       - db
     env_file:
