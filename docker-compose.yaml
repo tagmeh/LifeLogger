@@ -55,8 +55,6 @@ services:
       - db
     env_file:
       - .env
-    expose:
-      - ${APP_PORT}
     ports:
       - "8000:8000"
     restart: "on-failure"
