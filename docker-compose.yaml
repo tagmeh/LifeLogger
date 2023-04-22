@@ -4,7 +4,7 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - "1340:80"
+      - "81:80"
     volumes:
       - static_volume:/home/app/microservice/static
     depends_on:
@@ -57,6 +57,8 @@ services:
       - .env
     expose:
       - ${APP_PORT}
+    ports
+      - "8000:8000"
     restart: "on-failure"
 
 volumes:
