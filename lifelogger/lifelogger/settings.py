@@ -81,8 +81,10 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'lifelogger.wsgi.application'
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # /app/static in the docker
 STATICFILES_DIR = (os.path.join(BASE_DIR, 'static'),)
+STATIC_URL = '/static/'
 
 
 # Database
