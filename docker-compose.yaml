@@ -57,7 +57,7 @@ services:
       - .env
     expose:
       - ${APP_PORT}
-    ports
+    ports:
       - "8000:8000"
     restart: "on-failure"
 
