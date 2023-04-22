@@ -47,7 +47,7 @@ services:
       dockerfile: Dockerfile
     command: sh -c "python manage.py migrate &&
                     python manage.py collectstatic &&
-                    gunicorn lifelogger.wsgi:application --bind 0.0.0.0:${APP_PORT}"
+                    gunicorn lifelogger.wsgi:application --bind 0.0.0.0:8001"
     volumes:
       - .:/microservice
       - static_volume:/home/app/microservice/static
@@ -56,7 +56,7 @@ services:
     env_file:
       - .env
     ports:
-      - "8000:8000"
+      - "8001:8001"
     restart: "on-failure"
 
 volumes:
