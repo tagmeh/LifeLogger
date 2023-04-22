@@ -4,7 +4,7 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - "1337:80"
+      - "1338:80"
     volumes:
       - static_volume:/home/app/microservice/static
     depends_on:
@@ -52,7 +52,7 @@ services:
       - .:/microservice
       - static_volume:/home/app/microservice/static
     ports:
-      - "1337:8001"
+      - "8000:8000"
     depends_on:
       - db
     env_file:
