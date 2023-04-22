@@ -9,7 +9,7 @@ services:
     volumes:
       - static_volume:/app/static/
     depends_on:
-      - app
+      - django-app
     restart: "on-failure"
 
   rabbitmq:
@@ -28,7 +28,7 @@ services:
       - 5672:5672
       - 15672:15672
     depends_on:
-      - app
+      - django-app
 
   db:
     image: postgres
@@ -50,7 +50,6 @@ services:
                     python manage.py collectstatic &&
                     gunicorn lifelogger.wsgi:application --bind 0.0.0.0:8000"
     volumes:
-      - .:/app/
       - static_volume:/app/static/
     depends_on:
       - db
