@@ -8,7 +8,7 @@ services:
     volumes:
       - static_volume:/home/app/microservice/static
     depends_on:
-      - lifelogger
+      - app
     restart: "on-failure"
 
   rabbitmq:
@@ -27,7 +27,7 @@ services:
       - 5672:5672
       - 15672:15672
     depends_on:
-      - lifelogger
+      - app
 
   db:
     image: postgres
@@ -41,7 +41,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
     restart: "on-failure"
 
-  lifelogger:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -55,7 +55,6 @@ services:
       - db
     env_file:
       - .env
-    image: microservice_app
     expose:
       - ${APP_PORT}
     restart: "on-failure"
