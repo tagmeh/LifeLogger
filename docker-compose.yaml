@@ -7,7 +7,7 @@ services:
     ports:
       - "8001:80"
     volumes:
-      - static_volume:/app/static
+      - static_volume:/microservice/static
     depends_on:
       - app
     restart: "on-failure"
@@ -50,8 +50,8 @@ services:
                     python manage.py collectstatic &&
                     gunicorn lifelogger.wsgi:application --bind 0.0.0.0:8000"
     volumes:
-      - .:/app/
-      - static_volume:/app/static
+      - .:/microservice
+      - static_volume:/microservice/static
     depends_on:
       - db
     env_file:
