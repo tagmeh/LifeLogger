@@ -4,7 +4,7 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - "80:80"
+      - "1333:80"
     volumes:
       - static_volume:/home/app/microservice/static
     depends_on:
