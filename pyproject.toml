@@ -14,14 +14,18 @@ django-filter = "^23.1"
 markdown = "^3.4.3"
 django-environ = "^0.10.0"
 python-dotenv = "^1.0.0"
-drf-spectacular = {extras = ["sidecar"], version = "^0.26.2"}
+drf-spectacular = { extras = ["sidecar"], version = "^0.26.2" }
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
 mypy = "^1.2.0"
 django-stubs = "^1.16.0"
+pytest = "^7.3.1"
+pytest-django = "^4.5.2"
 djangorestframework-stubs = "^1.10.0"
-
+pytest-factoryboy = "^2.5.1"
+faker = "^18.4.0"
+ipython = "^8.12.0"
 
 
 [build-system]
@@ -30,12 +34,20 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.mypy]
+#PycharmProjects\LifeLogger\lifelogger> mypy --config-file=../pyproject.toml .
+# Can't seem to run mypy from the same level as pyproject.toml, so we must specify the config in the command.
 python_version = 3.11
 disallow_untyped_defs = true
 ignore_missing_imports = true
 strict = true
 exclude = ["tests"]
-plugins = ["mypy_django_plugin.main"]
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "lifelogger.settings"
+
+[tool.djangorestframework-stubs]
+django_settings_module = "lifelogger.settings"
 
 
 [tool.black]
@@ -43,5 +55,6 @@ line_length = 120
 skip-string-normalization = true
 
 
-[tool.django-stubs]
-django_settings_module = "myproject.settings"
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "lifelogger.settings"
+python_files = "test_*.py"

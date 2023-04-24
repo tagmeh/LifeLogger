@@ -1,6 +1,7 @@
 from typing import Any
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, models
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListCreateAPIView
@@ -12,9 +13,14 @@ from .serializers import UserSerializer
 User = get_user_model()
 
 
+@extend_schema(
+    tags=['accounts']
+)
 class UserListCreateAPIView(ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = []
+    authentication_classes = []
     filter_backends = [DjangoFilterBackend, SearchFilter]
     search_fields = ['first_name', 'last_name', 'username', 'email']
     filterset_fields = {
@@ -29,9 +35,8 @@ class UserListCreateAPIView(ListCreateAPIView):
     @extend_schema(
         parameters=[OpenApiParameter('search', str)],
         responses=UserSerializer(many=True),
-        tags=['accounts'],
         summary='List Accounts',
-        operation_id='get-accounts'
+        operation_id='list-accounts'
     )
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
@@ -40,9 +45,8 @@ class UserListCreateAPIView(ListCreateAPIView):
         return super().get(request, *args, **kwargs)
 
     @extend_schema(
-        tags=['accounts'],
         summary='Create Account',
-        operation_id='create-accounts'
+        operation_id='create-accounts',
     )
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
