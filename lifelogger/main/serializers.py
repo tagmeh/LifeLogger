@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer[models.User]):
 
     @staticmethod
     def validate_email(email):
-        """ While this validation already exists at a model level. Catching it here allows for a cleaner response. """
+        """While this validation already exists at a model level. Catching it here allows for a cleaner response."""
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError('An account with that email already exists.')
         return email
@@ -41,6 +41,3 @@ class UserSerializer(serializers.ModelSerializer[models.User]):
     def create(validated_data: dict):
         del validated_data['confirm_password']
         return User.objects.create_user(**validated_data)
-
-
-

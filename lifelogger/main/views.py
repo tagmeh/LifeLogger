@@ -17,9 +17,7 @@ from .serializers import UserSerializer
 User = get_user_model()
 
 
-@extend_schema(
-    tags=['accounts']
-)
+@extend_schema(tags=['accounts'])
 class UserListAPIView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -49,9 +47,7 @@ class UserListAPIView(ListAPIView):
         return super().get(request, *args, **kwargs)
 
 
-@extend_schema(
-    tags=['accounts']
-)
+@extend_schema(tags=['accounts'])
 class UserCreateAPIView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -69,9 +65,7 @@ class UserCreateAPIView(CreateAPIView):
         return super().post(request, *args, **kwargs)
 
 
-@extend_schema(
-    tags=['accounts']
-)
+@extend_schema(tags=['accounts'])
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -83,10 +77,7 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     def put(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return Response("This method is not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @extend_schema(
-        summary='Retrieve Account',
-        operation_id='retrieve-account'
-    )
+    @extend_schema(summary='Retrieve Account', operation_id='retrieve-account')
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
         Retrieve a single User instance
