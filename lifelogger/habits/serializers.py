@@ -30,7 +30,7 @@ class UserHabitsSerializer(serializers.ModelSerializer):
 
         # Get/Create a Habit object, then add it to the M2M field of UserHabits object
         for habit in habits:
-            habit, _ = Habit.objects.get_or_create(name__iexact=habit['name'])
+            habit, _ = Habit.objects.get_or_create(name__iexact=habit['name'], defaults=habit)
             user_habits.habits.add(habit)
 
         return user_habits
@@ -41,7 +41,7 @@ class UserHabitsSerializer(serializers.ModelSerializer):
         instance.save()
 
         for habit in habits:
-            habit, _ = Habit.objects.get_or_create(name__iexact=habit['name'])
+            habit, _ = Habit.objects.get_or_create(name__iexact=habit['name'], defaults=habit)
             instance.habits.add(habit)
 
         return instance
