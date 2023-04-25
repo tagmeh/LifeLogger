@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -33,6 +33,8 @@ DEBUG = os.environ['DEBUG']
 
 ALLOWED_HOSTS = ["*"]
 
+AUTH_USER_MODEL = 'main.ExtendedUser'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -45,8 +47,10 @@ INSTALLED_APPS = [
     # 3rd Party
     'rest_framework',
     'drf_spectacular',
-    'drf_spectacular_sidecar',  # required for Django collectstatic discovery
-    # Apps
+    'drf_spectacular_sidecar',  # required for Django collectstatic discovery'
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    # Internal Apps
     'main',
     'habits',
     'exercise',
@@ -136,7 +140,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Swagger settings
 SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {'Token': {'type': 'apiKey', 'name': 'Authorization', 'in': 'header'}},
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'JWT authorization header using the Bearer scheme. Example: "Bearer {token}"'
+        },
+    },
+    'LOGIN_URL': 'rest_framework:login',
+    'LOGOUT_URL': 'rest_framework:logout',
+    'USE_SESSION_AUTH': False,
+    'APIS_SORTER': 'alpha',
+    'OPERATIONS_SORTER': 'alpha',
+    'TAGS_SORTER': 'alpha',
+    'DEFAULT_FIELD_INSPECTORS': [
+        'drf_spectacular.inspectors.DjangoRestResponseInspector',
+        'drf_spectacular.inspectors.DictSerializerInspector',
+        'drf_spectacular.inspectors.SerializerInspector',
+    ],
+    'DEFAULT_FILTER_INSPECTORS': [
+        'drf_spectacular.inspectors.CoreAPICompatInspector',
+        'drf_spectacular.inspectors.FilterInspector',
+        'drf_spectacular.inspectors.DjangoFilterInspector',
+    ],
 }
 
 SPECTACULAR_SETTINGS = {
@@ -150,12 +177,63 @@ SPECTACULAR_SETTINGS = {
     'SORT_OPERATION_PARAMETERS': False,
     'COMPONENT_SPLIT_REQUEST': True,
     'COMPONENT_SPLIT_RESPONSE': True,
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "persistAuthorization": True,
+        "displayOperationId": True,
+    },
+
 }
 
 REST_FRAMEWORK = {
+    "NON_FIELD_ERRORS_KEY": "errors",
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ]
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": "rest_framework.permissions.IsAuthenticated",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 25,
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": os.environ['SECRET_KEY'],
+    "VERIFYING_KEY": "",
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JSON_ENCODER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+
+    "JTI_CLAIM": "jti",
+
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+
+    "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
+    "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
+    "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
+    "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
+    "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
+    "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }

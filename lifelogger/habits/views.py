@@ -2,22 +2,24 @@ from typing import Any
 from urllib.request import Request
 
 from drf_spectacular.utils import extend_schema
+from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Habit, UserHabits
 from .serializers import HabitSerializer, UserHabitsSerializer
 
 
 @extend_schema(tags=['habits'], summary='SUMMARY')
-class HabitList(ListCreateAPIView):
+class HabitListAPIView(ListCreateAPIView):
     """ Expose the List (GET) and Create (POST) endpoints for the Habits model. """
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
-    permission_classes = []
-    authentication_classes = []
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [BasicAuthentication, JWTAuthentication]
 
     @extend_schema(summary='List Habits', operation_id='list-habits')
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
@@ -31,12 +33,12 @@ class HabitList(ListCreateAPIView):
 
 
 @extend_schema(tags=['habits'])
-class HabitDetail(RetrieveUpdateAPIView):
+class HabitDetailAPIView(RetrieveUpdateAPIView):
     """ Expose the Retrieve (GET) and the Update (Patch) endpoints for the Habits model. """
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
-    permission_classes = []
-    authentication_classes = []
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [BasicAuthentication, JWTAuthentication]
     lookup_field = 'pk'
 
     @extend_schema(methods=['PUT'], exclude=True)  # Excludes it from the Swagger
@@ -55,17 +57,18 @@ class HabitDetail(RetrieveUpdateAPIView):
 
 
 @extend_schema(tags=['user-habits'])
-class UserHabitsList(ListCreateAPIView):
+class UserHabitsListCreateAPIView(ListCreateAPIView):
     """
     List all user habits or create a new UserHabit.
     """
-    queryset = UserHabits.objects.all()
     serializer_class = UserHabitsSerializer
     permission_classes = [IsAuthenticated]
-    # authentication_classes = []
+    authentication_classes = [BasicAuthentication, JWTAuthentication]
+
+    def get_queryset(self):
+        return UserHabits.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        print(f"{self.request.user=}")
         serializer.save(user=self.request.user)
 
     @extend_schema(summary='List UserHabits', operation_id='list-user-habits')
@@ -80,14 +83,14 @@ class UserHabitsList(ListCreateAPIView):
 
 
 @extend_schema(tags=['user-habits'])
-class UserHabitsDetail(RetrieveUpdateDestroyAPIView):
+class UserHabitsDetailAPIView(RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update, or delete a UserHabit object.
     """
     queryset = UserHabits.objects.all()
     serializer_class = UserHabitsSerializer
-    permission_classes = []
-    authentication_classes = []
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [BasicAuthentication, JWTAuthentication]
     lookup_field = 'id'
 
     def get_queryset(self):

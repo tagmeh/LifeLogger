@@ -1,5 +1,12 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import Habit, UserHabits
+
+
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = get_user_model()
+#         fields = '__all__'
 
 
 class HabitSerializer(serializers.ModelSerializer):
@@ -10,10 +17,12 @@ class HabitSerializer(serializers.ModelSerializer):
 
 class UserHabitsSerializer(serializers.ModelSerializer):
     habits = HabitSerializer(many=True)
+    # user = UserSerializer(read_only=True)
 
     class Meta:
         model = UserHabits
-        fields = '__all__'
+        fields = ('user', 'date', 'habits')
+        read_only_fields = ('user', 'date')
 
     def create(self, validated_data):
         habits = validated_data.pop('habits')  # Remove the habits list[dict[]]

@@ -15,6 +15,7 @@ markdown = "^3.4.3"
 django-environ = "^0.10.0"
 python-dotenv = "^1.0.0"
 drf-spectacular = { extras = ["sidecar"], version = "^0.26.2" }
+djangorestframework-simplejwt = "^5.2.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"

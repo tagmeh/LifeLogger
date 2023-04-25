@@ -1,3 +1,5 @@
 from django.contrib import admin
+from habits import models
 
-# Register your models here.
+admin.site.register(models.Habit)
+admin.site.register(models.UserHabits)
