@@ -32,12 +32,10 @@ class UserSerializer(serializers.ModelSerializer[models.User]):
 
     def validate(self, payload):
         self.validate_passwords(payload['password'], payload['confirm_password'])
-
         payload['username'] = payload['email']  # The User.create_user() method requires a username.
 
         return payload
 
-    @staticmethod
-    def create(validated_data: dict):
+    def create(self, validated_data: dict):
         del validated_data['confirm_password']
         return User.objects.create_user(**validated_data)

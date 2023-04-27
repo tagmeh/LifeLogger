@@ -16,6 +16,7 @@ django-environ = "^0.10.0"
 python-dotenv = "^1.0.0"
 drf-spectacular = { extras = ["sidecar"], version = "^0.26.2" }
 djangorestframework-simplejwt = "^5.2.2"
+pytest-cov = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
@@ -27,6 +28,7 @@ djangorestframework-stubs = "^1.10.0"
 pytest-factoryboy = "^2.5.1"
 faker = "^18.4.0"
 ipython = "^8.12.0"
+coverage = "^7.2.3"
 
 
 [build-system]
@@ -59,3 +61,4 @@ skip-string-normalization = true
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "lifelogger.settings"
 python_files = "test_*.py"
+addopts = "--cov --cov-report html --cov-report term-missing --cov-fail-under 95"

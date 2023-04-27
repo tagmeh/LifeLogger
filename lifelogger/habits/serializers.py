@@ -33,6 +33,7 @@ class UserHabitsSerializer(serializers.ModelSerializer):
             habit, _ = Habit.objects.get_or_create(name__iexact=habit['name'], defaults=habit)
             user_habits.habits.add(habit)
 
+        user_habits.save()
         return user_habits
 
     def update(self, instance, validated_data):
@@ -44,4 +45,5 @@ class UserHabitsSerializer(serializers.ModelSerializer):
             habit, _ = Habit.objects.get_or_create(name__iexact=habit['name'], defaults=habit)
             instance.habits.add(habit)
 
+        instance.save()
         return instance

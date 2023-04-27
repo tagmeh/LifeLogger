@@ -16,6 +16,8 @@ from dotenv import load_dotenv
 
 import os
 
+from rest_framework.exceptions import ValidationError
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -32,6 +34,8 @@ SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = os.environ['DEBUG']
 
 ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:8001" "http://localhost:8000"]
+CORS_ORIGIN_WHITELIST = ["http://localhost:8001" "http://localhost:8000"]
 
 AUTH_USER_MODEL = 'main.ExtendedUser'
 
