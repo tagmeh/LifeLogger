@@ -14,9 +14,11 @@ class ExtendedUser(AbstractUser):
     def send_reminder(self):
         if len(self.habits.all()) > 0:
             habits = '\n'.join([habit.name for habit in self.habits.all()])
-            message = f"Howdy, be sure to stop by LifeLogger and update the progress on your habits!" \
-                      f"\nHabits:\n" \
-                      f"{habits}"
+            message = (
+                f"Howdy, be sure to stop by LifeLogger and update the progress on your habits!"
+                f"\nHabits:\n"
+                f"{habits}"
+            )
         else:
             message = "You haven't subscribed to any habits yet, head on over to LifeLogger to begin your journey!"
 

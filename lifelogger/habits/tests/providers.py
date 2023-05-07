@@ -38,6 +38,6 @@ class HabitProvider:
             "Write in a journal",
             "Listen to music",
             "Be present in the moment",
-            "Connect with friends"
+            "Connect with friends",
         ]
         return random.choice(habits)

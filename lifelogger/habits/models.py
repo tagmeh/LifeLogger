@@ -8,6 +8,7 @@ class Habit(models.Model):
     A user can make progress against being successful with the Habit on a daily basis.
     Examples of Habits could be "Avoid Soda" or "Go on a walk".
     """
+
     # Name of the habit. The way it's phrased will help indicate if it's a "good" or "bad" habit.
     name = models.CharField(max_length=50)
     # Is this a good habit they are working towards, or a bad habit they're trying to avoid.
@@ -27,6 +28,7 @@ class SubscribedHabit(models.Model):
     We log when they subscribed to it, for future display settings.
     We also show if they've reviewed and updated the Habit today, which is reset at midnight each night.
     """
+
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     habit = models.ForeignKey(Habit, on_delete=models.CASCADE)
     updated_today = models.BooleanField(default=False)  # Whether the user has reviewed and updated their habit today.
@@ -39,10 +41,8 @@ class HabitHistoryLog(models.Model):
     This retains a history of whether the user feels they've achieved their daily goal,
       or preformed the habit they subscribed to.
     """
+
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     habit = models.ForeignKey(Habit, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)  # Updates on creation only.
     achieved = models.BooleanField()  # Did the user feel like they achieved their daily goal/habit.
-
-
-

@@ -7,11 +7,11 @@ def custom_exception_handler(exc, context):
 
     if isinstance(exc, ValidationError):
         """
-        Reformats ValidationError objects into simple strings with the same information.
-        This is to homogenize the output to always have an "errors" property at the top level.
-        {"errors": ["old_password (incorrect) : old_password does not match the existing password"]
-        {"errors": ["non_field_errors (invalid) : Error message here"]
-}
+                Reformats ValidationError objects into simple strings with the same information.
+                This is to homogenize the output to always have an "errors" property at the top level.
+                {"errors": ["old_password (incorrect) : old_password does not match the existing password"]
+                {"errors": ["non_field_errors (invalid) : Error message here"]
+        }
         """
         if response is not None:
             data = response.data

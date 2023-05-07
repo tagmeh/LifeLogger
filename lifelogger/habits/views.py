@@ -14,8 +14,13 @@ from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from habits.models import Habit, SubscribedHabit, HabitHistoryLog
-from habits.serializers import HabitSerializer, SubscribedHabitSerializer, UpdateHabitsSerializer, \
-    HabitHistoryLogSerializer, AddRemoveSubscribedHabitSerializer
+from habits.serializers import (
+    HabitSerializer,
+    SubscribedHabitSerializer,
+    UpdateHabitsSerializer,
+    HabitHistoryLogSerializer,
+    AddRemoveSubscribedHabitSerializer,
+)
 from lifelogger.custom_APIView import UpdateCreateAPIView
 
 log = logging.getLogger(__name__)
@@ -81,7 +86,7 @@ class SubscribedHabitsListAPIView(ListAPIView):
         'habit__id': ['exact'],
         'habit__name': ['exact', 'icontains'],
         'updated_today': ['exact'],
-        'subscribed_on': ['gte', 'lte']
+        'subscribed_on': ['gte', 'lte'],
     }
 
     @extend_schema(summary='List Subscribed Habits per User', operation_id='list-subscribed-habits')
@@ -107,8 +112,11 @@ class SubscribedHabitsUpdateAPIView(UpdateAPIView):
     def put(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return Response("This method is not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @extend_schema(summary='Modify one or more Subscribed Habits', operation_id='modify-subscribed-habits',
-                   request=UpdateHabitsSerializer(many=True))
+    @extend_schema(
+        summary='Modify one or more Subscribed Habits',
+        operation_id='modify-subscribed-habits',
+        request=UpdateHabitsSerializer(many=True),
+    )
     def patch(self, request, *args, **kwargs):
         """
         This view updates the updated_today field and creates a HabitHistoryLog entry
@@ -142,8 +150,11 @@ class AddSubscribedHabitsAPIView(UpdateCreateAPIView):
     def put(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return Response("This method is not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @extend_schema(summary='Adds one or more Habit(s) to a User', operation_id='add-subscribed-habits',
-                   request=AddRemoveSubscribedHabitSerializer)
+    @extend_schema(
+        summary='Adds one or more Habit(s) to a User',
+        operation_id='add-subscribed-habits',
+        request=AddRemoveSubscribedHabitSerializer,
+    )
     def patch(self, request, *args, **kwargs):
         """
         This endpoint allows a user to "subscribe" to a habit. Will automatically add all Habit ids to the current
@@ -160,9 +171,9 @@ class AddSubscribedHabitsAPIView(UpdateCreateAPIView):
 
         if serializer.is_valid(raise_exception=True):
             # The .exclude() avoids re-subscribing to an existing habit and keeps the response message accurate.
-            habits = Habit.objects.filter(
-                pk__in=serializer.data['habit_ids']
-            ).exclude(extendeduser__habits__in=request.user.habits.all())
+            habits = Habit.objects.filter(pk__in=serializer.data['habit_ids']).exclude(
+                extendeduser__habits__in=request.user.habits.all()
+            )
 
             if len(habits) == 0:
                 response = {'message': f'User is already subscribed to those habits.'}
@@ -175,8 +186,11 @@ class AddSubscribedHabitsAPIView(UpdateCreateAPIView):
             response = {'error': serializer.errors}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
-    @extend_schema(summary='Remove one or more Habit(s) from the User', operation_id='remove-subscribed-habits',
-                   request=AddRemoveSubscribedHabitSerializer)
+    @extend_schema(
+        summary='Remove one or more Habit(s) from the User',
+        operation_id='remove-subscribed-habits',
+        request=AddRemoveSubscribedHabitSerializer,
+    )
     def post(self, request, *args, **kwargs):
         """
         The opposite of the Patch endpoint, this endpoint will remove the association with the given Habit id and the
@@ -211,11 +225,7 @@ class HabitHistoryLogListAPIView(ListAPIView):
     authentication_classes = [BasicAuthentication, JWTAuthentication]
     filter_backends = [DjangoFilterBackend, SearchFilter]
     search_fields = ['habit__id', 'habit__name']
-    filterset_fields = {
-        'id': ['exact'],
-        'habit__id': ['exact'],
-        'habit__name': ['exact', 'icontains']
-    }
+    filterset_fields = {'id': ['exact'], 'habit__id': ['exact'], 'habit__name': ['exact', 'icontains']}
 
     @extend_schema(summary='List Habit History Log', operation_id='list-habit-history-log')
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:

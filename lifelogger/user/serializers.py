@@ -36,7 +36,7 @@ class PasswordUpdateSerializer(serializers.Serializer):
     confirm_password = serializers.CharField(required=True)
 
     def validate_old_password(self, old_password):
-        """ Validate that the old_password matches the existing password. """
+        """Validate that the old_password matches the existing password."""
         log.debug('validating old_password')
 
         if self.context['request'].user.check_password(raw_password=old_password) is False:
@@ -45,7 +45,7 @@ class PasswordUpdateSerializer(serializers.Serializer):
         return old_password
 
     def validate_new_password(self, new_password):
-        """ Validate the new password is not the same as the existing/old password. """
+        """Validate the new password is not the same as the existing/old password."""
         if check_password(password=new_password, encoded=self.context['request'].user.password) is True:
             # This error shouldn't expose any new information, as only logged-in users can change their password.
             # And they can only change their own password.

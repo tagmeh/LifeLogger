@@ -2,9 +2,7 @@ from rest_framework import mixins
 from rest_framework.generics import GenericAPIView
 
 
-class ListUpdateAPIView(mixins.ListModelMixin,
-                        mixins.UpdateModelMixin,
-                        GenericAPIView):
+class ListUpdateAPIView(mixins.ListModelMixin, mixins.UpdateModelMixin, GenericAPIView):
     """
     Concrete view for listing and updating a model instance.
     """
@@ -16,9 +14,7 @@ class ListUpdateAPIView(mixins.ListModelMixin,
         return self.partial_update(request, *args, **kwargs)
 
 
-class UpdateCreateAPIView(mixins.CreateModelMixin,
-                          mixins.UpdateModelMixin,
-                          GenericAPIView):
+class UpdateCreateAPIView(mixins.CreateModelMixin, mixins.UpdateModelMixin, GenericAPIView):
     """
     Concrete view for creating and updating a model instance.
     """

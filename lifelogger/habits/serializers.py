@@ -43,4 +43,3 @@ class AddRemoveSubscribedHabitSerializer(serializers.Serializer):
     def validate_habit_ids(self, habit_ids):
         habit_ids = list(set(habit_ids))  # Remove duplicates
         return habit_ids
-
