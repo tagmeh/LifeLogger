@@ -23,7 +23,7 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/main/', include('main.urls'), name='main'),
+    path('api/v1/main/', include('user.urls'), name='main'),
     path('api/v1/habits/', include('habits.urls'), name='habits'),
     path('api/v1/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/v1/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

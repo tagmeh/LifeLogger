@@ -1,12 +1,12 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Habit, UserHabits
+from .models import Habit, HabitHistoryLog, SubscribedHabit
 
 
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = get_user_model()
-#         fields = '__all__'
+class LimitedExtendedUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ('first_name', 'last_name', 'email')
 
 
 class HabitSerializer(serializers.ModelSerializer):
@@ -15,35 +15,32 @@ class HabitSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserHabitsSerializer(serializers.ModelSerializer):
-    habits = HabitSerializer(many=True)
-    # user = UserSerializer(read_only=True)
+class SubscribedHabitSerializer(serializers.ModelSerializer):
+    habit = HabitSerializer(read_only=True)
 
     class Meta:
-        model = UserHabits
-        fields = ('user', 'date', 'habits')
-        read_only_fields = ('user', 'date')
+        model = SubscribedHabit
+        fields = ('habit', 'updated_today', 'subscribed_on')
 
-    def create(self, validated_data):
-        habits = validated_data.pop('habits')  # Remove the habits list[dict[]]
-        user_habits = UserHabits.objects.create(**validated_data)  # Get a UserHabits instance
 
-        # Get/Create a Habit object, then add it to the M2M field of UserHabits object
-        for habit in habits:
-            habit, _ = Habit.objects.get_or_create(name__iexact=habit['name'], defaults=habit)
-            user_habits.habits.add(habit)
+class HabitHistoryLogSerializer(serializers.ModelSerializer):
+    user = LimitedExtendedUserSerializer(read_only=True)
+    habit = HabitSerializer(read_only=True)
 
-        user_habits.save()
-        return user_habits
+    class Meta:
+        model = HabitHistoryLog
+        fields = ('user', 'habit', 'created_on', 'achieved')
 
-    def update(self, instance, validated_data):
-        habits = validated_data.pop('habits')
-        instance.user = validated_data.get('user', instance.user)  # TODO: Does this overwrite the existing user?
-        instance.save()
 
-        for habit in habits:
-            habit, _ = Habit.objects.get_or_create(name__iexact=habit['name'], defaults=habit)
-            instance.habits.add(habit)
+class UpdateHabitsSerializer(serializers.Serializer):
+    habit_index = serializers.IntegerField()
+    achieved = serializers.BooleanField()
 
-        instance.save()
-        return instance
+
+class AddRemoveSubscribedHabitSerializer(serializers.Serializer):
+    habit_ids = serializers.ListField(child=serializers.IntegerField())
+
+    def validate_habit_ids(self, habit_ids):
+        habit_ids = list(set(habit_ids))  # Remove duplicates
+        return habit_ids
+

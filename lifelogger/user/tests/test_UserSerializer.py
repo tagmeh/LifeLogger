@@ -1,31 +1,12 @@
 import pytest
-from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
-from main.serializers import UserSerializer
-
-User = get_user_model()
-
-
-@pytest.fixture
-def valid_user_data():
-    return {
-        "email": "test@example.com",
-        "password": "strongpassword",
-        "confirm_password": "strongpassword",
-        "first_name": "Test",
-        "last_name": "User",
-    }
-
-
-@pytest.fixture
-def user(db):
-    return User.objects.create_user(username='testuser', email='test@example.com', password='testpass')
+from user.serializers import UserSerializer
 
 
 @pytest.mark.django_db
 def test_UserSerializer_valid_user(valid_user_data):
     serializer = UserSerializer(data=valid_user_data)
-    assert serializer.is_valid()
+    assert serializer.is_valid(raise_exception=True)
 
     user = serializer.save()
     assert user.email == valid_user_data["email"]
@@ -65,4 +46,4 @@ def test_validate_email(user):
     with pytest.raises(ValidationError) as e:
         serializer.is_valid(raise_exception=True)
 
-    assert 'An account with that email already exists.' in str(e.value)
+    assert 'An user with that email already exists.' in str(e.value)

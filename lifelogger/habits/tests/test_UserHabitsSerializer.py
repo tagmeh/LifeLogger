@@ -1,33 +1,10 @@
 import pytest
 from django.contrib.auth import get_user_model
 from datetime import date
-from habits.models import Habit, UserHabits
+from habits.models import UserHabits
 from habits.serializers import UserHabitsSerializer
 
 User = get_user_model()
-
-
-@pytest.fixture
-def user(db):
-    return User.objects.create_user(username='testuser', email='test@example.com', password='testpass')
-
-
-@pytest.fixture
-def good_habit(db):
-    return Habit.objects.create(name='good habit', is_good_habit=True)
-
-
-@pytest.fixture
-def bad_habit(db):
-    return Habit.objects.create(name='bad habit', is_good_habit=False)
-
-
-@pytest.fixture
-def habits_data(good_habit, bad_habit):
-    return [
-        {'name': good_habit.name},
-        {'name': bad_habit.name},
-    ]
 
 
 @pytest.mark.django_db
@@ -38,7 +15,7 @@ def test_UserHabitsSerializer_create(user, habits_data, good_habit, bad_habit):
     """
     serializer_data = {'user': user.id, 'habits': habits_data}
     serializer = UserHabitsSerializer(data=serializer_data)
-    assert serializer.is_valid()
+    assert serializer.is_valid(raise_exception=True)
 
     user_habits = serializer.save(user=user)
 

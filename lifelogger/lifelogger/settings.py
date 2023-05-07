@@ -37,7 +37,7 @@ ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = ["http://localhost:8001" "http://localhost:8000"]
 CORS_ORIGIN_WHITELIST = ["http://localhost:8001" "http://localhost:8000"]
 
-AUTH_USER_MODEL = 'main.ExtendedUser'
+AUTH_USER_MODEL = 'user.ExtendedUser'
 
 # Application definition
 
@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     # Internal Apps
-    'main',
+    'user',
     'habits',
     'exercise',
 ]
@@ -189,7 +189,8 @@ SPECTACULAR_SETTINGS = {
 }
 
 REST_FRAMEWORK = {
-    "NON_FIELD_ERRORS_KEY": "errors",
+    'EXCEPTION_HANDLER': 'lifelogger.exception_handler.custom_exception_handler',
+    # "NON_FIELD_ERRORS_KEY": "errors",
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     'DEFAULT_AUTHENTICATION_CLASSES': [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -200,6 +201,7 @@ REST_FRAMEWORK = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# For when I get around to finishing the email feature.  https://stackoverflow.com/a/27723493
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
@@ -233,4 +235,56 @@ SIMPLE_JWT = {
     "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
+}
+
+LOGGING = {
+    'version': 1,  # the dictConfig format version
+    'disable_existing_loggers': False,  # retain the default loggers
+    'formatters': {
+        'verbose': {
+            'format': '{name} {levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'general.log',
+            'formatter': 'simple'
+        }
+    },
+    'loggers': {
+        '': {  # Empty string logger to handle any missed logger.
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'lifelogger': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'exercise': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'habits': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'main': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
 }
