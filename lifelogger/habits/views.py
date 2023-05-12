@@ -7,7 +7,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView, ListAPIView, UpdateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView, ListAPIView, UpdateAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -138,7 +138,7 @@ class SubscribedHabitsUpdateAPIView(UpdateAPIView):
 
 
 @extend_schema(tags=['Subscribed Habits'])
-class AddSubscribedHabitsAPIView(UpdateCreateAPIView):
+class SubscribeHabitsAPIView(UpdateAPIView):
     queryset = SubscribedHabit.objects.all()
     serializer_class = AddRemoveSubscribedHabitSerializer
     permission_classes = [IsAuthenticated]
@@ -184,6 +184,14 @@ class AddSubscribedHabitsAPIView(UpdateCreateAPIView):
             response = {'error': serializer.errors}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
+
+@extend_schema(tags=['Subscribed Habits'])
+class UnsubscribeHabitsAPIView(CreateAPIView):
+    queryset = SubscribedHabit.objects.all()
+    serializer_class = AddRemoveSubscribedHabitSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [BasicAuthentication, JWTAuthentication]
+
     @extend_schema(
         summary='Remove one or more Habit(s) from the User',
         operation_id='remove-subscribed-habits',
@@ -193,7 +201,7 @@ class AddSubscribedHabitsAPIView(UpdateCreateAPIView):
         """
         The opposite of the Patch endpoint, this endpoint will remove the association with the given Habit id and the
         user calling the endpoint. In other words, this endpoint allows the user to "unsubscribe"
-        from a Habit or habits.
+        from a Habit or habits. (formerly
 
         Similar to the above endpoint, only habits passed in are removed, won't fail if it attempts to remove habits
         that don't exist, aren't subscribed to, or are duplicates.

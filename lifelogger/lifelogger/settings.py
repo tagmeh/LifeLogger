@@ -170,9 +170,12 @@ SWAGGER_SETTINGS = {
     ],
 }
 
+with open('drf_spec_desc.md', 'r') as f:
+    description_txt = f.read()
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'LifeLogger',
-    'DESCRIPTION': 'Simple API to log life details',
+    'DESCRIPTION': description_txt,
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
@@ -185,6 +188,7 @@ SPECTACULAR_SETTINGS = {
         "deepLinking": True,
         "persistAuthorization": True,
         "displayOperationId": True,
+        "tryItOutEnabled": True,
     },
 }
 
