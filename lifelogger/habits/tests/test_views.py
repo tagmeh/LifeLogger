@@ -17,12 +17,12 @@ def test_list_habits(api_client, habit, user):
 
 
 @pytest.mark.django_db
-def test_create_habit(api_client, habit_data, user):
+def test_create_habit(api_client, habit_object, user):
     url = reverse('habits:habit-create-list')
     api_client.force_authenticate(user)
-    response = api_client.post(url, data=habit_data)
+    response = api_client.post(url, data=habit_object)
 
     assert response.status_code == status.HTTP_201_CREATED
     habit = Habit.objects.first()
-    assert habit.name == habit_data['name']
-    assert habit.is_good_habit == habit_data['is_good_habit']
+    assert habit.name == habit_object['name']
+    assert habit.is_good_habit == habit_object['is_good_habit']

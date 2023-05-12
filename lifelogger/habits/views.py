@@ -7,7 +7,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView, ListAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -130,11 +130,9 @@ class SubscribedHabitsUpdateAPIView(UpdateAPIView):
         for item in serializer.validated_data:
             with transaction.atomic():
                 subbed_hab = SubscribedHabit.objects.get(user=request.user, habit=item['habit_index'])
-                subbed_hab.updated_today = True
-                subbed_hab.save()
 
-                # creating the HabitHistoryLog entries using the habit instance from above.
-                HabitHistoryLog.objects.create(user=request.user, habit=subbed_hab.habit, achieved=item['achieved'])
+                # Updates the SubscribedHabit.updated_today to True, and creates a HabitHistoryLog
+                subbed_hab.log_progress(achieved=item['achieved'])
 
         return Response(status=status.HTTP_200_OK)
 

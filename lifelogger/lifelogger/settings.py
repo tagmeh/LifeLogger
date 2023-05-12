@@ -257,7 +257,7 @@ LOGGING = {
     'loggers': {
         '': {  # Empty string logger to handle any missed logger.
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
         },
         'django': {
             'handlers': ['console'],
@@ -275,7 +275,7 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
-        'main': {
+        'user': {
             'handlers': ['console'],
             'level': 'DEBUG',
         },

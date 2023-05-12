@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core import validators
 from django.db import models
 
 
@@ -10,7 +11,7 @@ class Habit(models.Model):
     """
 
     # Name of the habit. The way it's phrased will help indicate if it's a "good" or "bad" habit.
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, validators=[validators.MinLengthValidator(5)])
     # Is this a good habit they are working towards, or a bad habit they're trying to avoid.
     is_good_habit = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)  # Updates on creation only.
@@ -34,6 +35,18 @@ class SubscribedHabit(models.Model):
     updated_today = models.BooleanField(default=False)  # Whether the user has reviewed and updated their habit today.
     subscribed_on = models.DateTimeField(auto_now_add=True)  # Updates on creation only.
 
+    def __str__(self):
+        return f"User {self.user.email} subscribed to Habit '{self.habit.name}' on {self.subscribed_on}"
+
+    def log_progress(self, achieved: bool):
+        """
+        Logs the user's progress on the subscribed habit.
+        Creates a new HabitHistoryLog instance for the current user and habit.
+        """
+        HabitHistoryLog.objects.create(user=self.user, habit=self.habit, achieved=achieved)
+        self.updated_today = True
+        self.save()
+
 
 class HabitHistoryLog(models.Model):
     """
@@ -46,3 +59,6 @@ class HabitHistoryLog(models.Model):
     habit = models.ForeignKey(Habit, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)  # Updates on creation only.
     achieved = models.BooleanField()  # Did the user feel like they achieved their daily goal/habit.
+
+    def __str__(self):
+        return f"User {self.user.email} achieved Habit {self.habit.name} on {self.created_on}: {self.achieved}"

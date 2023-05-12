@@ -42,7 +42,7 @@ def test_UserSerializer_password_mismatch(valid_user_data):
 
 @pytest.mark.django_db
 def test_validate_email(user):
-    serializer = UserSerializer(data={'username': 'testuser2', 'email': user.email, 'password': 'testpassword'})
+    serializer = UserSerializer(data={'username': 'testuser2', 'email': user().email, 'password': 'testpassword'})
     with pytest.raises(ValidationError) as e:
         serializer.is_valid(raise_exception=True)
 
