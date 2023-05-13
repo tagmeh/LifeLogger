@@ -41,5 +41,8 @@ class AddRemoveSubscribedHabitSerializer(serializers.Serializer):
     habit_ids = serializers.ListField(child=serializers.IntegerField())
 
     def validate_habit_ids(self, habit_ids):
-        habit_ids = list(set(habit_ids))  # Remove duplicates
+        if len(habit_ids) == 0:  # Doesn't allow payloads with empty arrays.
+            raise serializers.ValidationError('Array must not be empty.')
+
+        habit_ids = list(set(habit_ids))  # Remove duplicates.
         return habit_ids

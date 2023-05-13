@@ -21,7 +21,6 @@ from habits.serializers import (
     HabitHistoryLogSerializer,
     AddRemoveSubscribedHabitSerializer,
 )
-from lifelogger.custom_APIView import UpdateCreateAPIView
 
 log = logging.getLogger(__name__)
 
@@ -127,14 +126,30 @@ class SubscribedHabitsUpdateAPIView(UpdateAPIView):
         if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        for item in serializer.validated_data:
+        # Convert List of OrderedDicts into a List of Dicts
+        habits_array = list(map(lambda x: dict(x), serializer.validated_data))
+
+        # Guard against duplicate habits in the array with True and False as values.
+        for habit in habits_array:
+            habit['achieved'] = not habit['achieved']  # Flip the 'achieved' value (bool)
+            if {'habit_index': habit['habit_index'], 'achieved': not habit['achieved']} in habits_array:
+                return Response(f'Cannot have one habit with two values in array. Habit Index: {habit["habit_index"]}',
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        # Convert to flat dictionary to remove duplicates
+        habits_dict = {habit['habit_index']: habit['achieved'] for habit in habits_array}
+
+        updated_habits = []
+        for ind, val in habits_dict.items():
             with transaction.atomic():
-                subbed_hab = SubscribedHabit.objects.get(user=request.user, habit=item['habit_index'])
+                subbed_hab = SubscribedHabit.objects.get(user=request.user, habit=ind)
 
                 # Updates the SubscribedHabit.updated_today to True, and creates a HabitHistoryLog
-                subbed_hab.log_progress(achieved=item['achieved'])
+                subbed_hab.log_progress(achieved=val)
 
-        return Response(status=status.HTTP_200_OK)
+                updated_habits.append(ind)
+
+        return Response(f"Updated {len(updated_habits)} habit(s)", status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=['Subscribed Habits'])
@@ -158,7 +173,7 @@ class SubscribeHabitsAPIView(UpdateAPIView):
         This endpoint allows a user to "subscribe" to a habit. Will automatically add all Habit ids to the current
         user. Users subscribing to habits is tracked in the intermediary model "SubscribedHabit" for reporting purposes.
 
-        Will wilently ignore any id passed in that doesn't match an existing habit.
+        Will silently ignore any id passed in that doesn't match an existing habit.
         Silently ignores duplicates (You cannot be assigned to the same Habit multiple times).
 
         Because this is a partial update, you cannot remove habits from the user with this endpoint, in the same vein,
@@ -174,10 +189,10 @@ class SubscribeHabitsAPIView(UpdateAPIView):
             )
 
             if len(habits) == 0:
-                response = {'message': f'User is already subscribed to those habits.'}
+                response = {'message': f'User is already subscribed to the specified habit(s).'}
             else:
                 request.user.habits.add(*habits)
-                response = {'message': f'User subscribed to {len(habits)} habit(s) successfully'}
+                response = {'message': f'User subscribed to {len(habits)} habit(s) successfully.'}
 
             return Response(response, status=status.HTTP_200_OK)
         else:
