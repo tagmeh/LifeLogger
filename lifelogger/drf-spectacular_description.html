@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="text/html">
+<link rel="stylesheet" type="text/css" href="drf-spectacular_stylesheet.css">
+<head>
+    <title>LifeLogger API</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<h1>LifeLogger API</h1>
+<p>
+    This Swagger API describes a website called LifeLogger. With LifeLogger, you can create an account, use JWT
+    authentication, describe habits, and track vitals like weight and other bodily stats. Users can subscribe to
+    habits to monitor personal achievements.
+</p>
+<h3>Getting Started</h3>
+<p>
+    Click on each section to expand it and see it's description and documentation.
+</p>
+<details>
+    <summary>Create an Account</summary>
+    <p>
+        To get started, use the <a href="#operations-Users-create-users">/user/create</a> endpoint to create a
+        new account.
+    </p>
+    <p>
+        Once you've created your account and authenticated with the server (basic or JWT on the swagger, JWT only
+        from a frontend); You may begin accessing the features, like subscribing to a habit, or tracking your vitals
+    </p>
+</details>
+<details>
+    <summary>Authentication</summary>
+    <p>
+        This section describes how to authenticate with the LifeLogger API using JSON Web Tokens (JWT).
+        <br><br>
+        To learn more about JWT, visit <a href="https://jwt.io/introduction">https://jwt.io/introduction</a>
+        <br>
+        This website uses <a href="https://django-rest-framework-simplejwt.readthedocs.io/en/latest/">Simple_JWT</a>
+        to implement JWT authentication.
+    </p>
+    <p>
+        <b>To authenticate with the LifeLogger API</b>, you'll need to obtain a JWT from the server by sending a POST
+        request to the <a href="#operations-Authentication-auth-token-create">/auth/token/</a> endpoint
+        with your username and password in the request body. The server will respond with a JWT, which you can use
+        to make authenticated requests to the API.
+    </p>
+    <p>
+        To make an authenticated request to the API, include the JWT in the header property <code>Authorization
+    </code> in your HTTP request using the following format:
+    </p>
+    <code>"Authorization": "Bearer &lt;JWT access token&gt;"</code>
+    <p>
+        Use the <a href="#operations-Authentication-auth-token-refresh">/auth/token/refresh/</a> endpoint and the
+        <code>refresh</code> token generated from the <code>auth/token/</code> endpoint (above) to get a new
+        <code>access</code> token.
+    </p>
+</details>
+<details>
+    <summary>Habits</summary>
+    <p>
+        This section is about tracking habits. A user can "subscribe"
+        to a habit that they want to work on. Subscribing to a habit that doesn't exist yet will automatically create
+        it and associate it with the user.
+        <br>
+        There are no limitations or grouping (treating upper and lowercase habits as the same habit) yet. There may
+        also be a NSFW filter using a word set and a machine learning algorithm to try and keep the habits clean-ish.
+        <br>
+        <br>
+        Habits can be good or bad, with the assumption that users want to work towards good habits, and work on
+        stopping bad habits.
+        <br>
+        <br>
+        Habits are tracked using the <a href="#operations-Subscribed_Habits-add-subscribed-habits">/habits/subscribe/</a> and
+        <a href="#operations-Subscribed_Habits-remove-subscribed-habits">/habits/unsubscribe/</a> endpoints.
+        <br>
+        Once a habit is subscribed to, the user can update each habit daily to help show progress (which may
+        eventually be displayed on a graph or timeline).
+        <br>
+        <br>
+        Each time a user updates one of their subscribed habits, a habit history log (<a
+            href="#operations-Habit_History_Log-list-habit-history-log">/habits/history
+        /logs/list/</a> is generated. This
+        endpoint can be used to generate graphs per user or per habit.
+        <br>
+        <br>
+        Use the <a href="#operations-Subscribed_Habits-modify-subscribed-habits">/habits/subscribed/update/</a>
+        endpoint to update their progress on a given habit. The habits the user is subscribed to can be found using
+        the <a href="#operations-Subscribed_Habits-list-subscribed-habits">/habits/subscribed/list/</a> endpoint.
+    </p>
+</details>
+<details>
+    <summary>Vitals</summary>
+    <p>
+        Similar to the Habits section, this section will describe the API endpoints for tracking a user's vitals. <br>
+        This section is still in active development, but will resemble the Habit section closely.<br>
+        There will be a section for the user to update the vitals they're willing to give (mostly focused on weight)
+        and an endpoint that contains the historical logs of each time a user made an update, with the ability to go
+        back and edit or remove certain data points, in instances where they fat-fingered the number, or made a mistake.
+    </p>
+</details>
+</body>
+</html>

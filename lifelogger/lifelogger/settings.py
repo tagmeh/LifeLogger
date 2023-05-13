@@ -170,7 +170,7 @@ SWAGGER_SETTINGS = {
     ],
 }
 
-with open('drf_spec_desc.md', 'r') as f:
+with open('drf-spectacular_description.html', 'r') as f:
     description_txt = f.read()
 
 SPECTACULAR_SETTINGS = {
